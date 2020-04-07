@@ -11,8 +11,7 @@ export class UserController {
   }
   @Post()
   addUser(@Body('id') userId:string): string {
-    console.log(userId)
-
+    this.userService.addUser(userId)
     return 'User Logged'
   }
 }

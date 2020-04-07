@@ -8,45 +8,74 @@ services:
       dockerfile: Dockerfile-dev
     command: "npm run start:watch"
     ports:
-      - "4200:4200"
+      - "${WEB_VIEW_HOST_PORT}:${WEB_VIEW_PORT}"
       - "49153:49153"
     volumes:
       - "./front-end/web-view:/usr/app/"
   
   gateway: 
     image: sellbery-test/gateway:${TAG:-latest}
+    env_file: .env
     container_name: gateway
     build: 
       context: ./back-end/gateway
       dockerfile: Dockerfile
     command: "npm run start:dev"
     ports:
-      - "3001:3000"
+      - "${GATEWAY_HOST_PORT}:${GATEWAY_PORT}"
     volumes:
       - "./back-end/gateway:/usr/app"
-  
+    networks: 
+      back-end:
+        ipv4_address: ${GATEWAY_DOMAIN}
+
   user:
     image: sellbery-test/user:${TAG:-latest}
+    env_file: .env
     container_name: user
     build: 
       context: ./back-end/user
-      dockerfile: Dockerfile
-    command: "npm run start:dev"
-    ports:
-      - "3100:3000"
+      dockerfile: Dockerfile-dev
+    command: 'bash -c "npm install && npm run start:dev"'
     volumes:
       - "./back-end/user:/usr/app"
+      - "./files:/usr/files"
+    networks: 
+      back-end: 
+        ipv4_address: ${USER_DOMAIN}
 
   auth0parser:
     image: sellbery-test/auth0-parser:${TAG:-latest}
+    env_file: .env
     container_name: auth0-parser
     build: 
       context: ./back-end/auth0-data-parser
-      dockerfile: Dockerfile
-    command: "npm run start:dev"
-    ports:
-      - "3101:3000"
+      dockerfile: Dockerfile-dev
+    command: 'bash -c "npm install && npm run start:dev"'
     volumes:
-      - "./back-end/gateway:/usr/app"
-    
+      - "./back-end/auth0-data-parser:/usr/app"
+    networks: 
+      back-end: 
+        ipv4_address: ${AUTH0_DOMAIN}
 
+  googleparser:
+    image: sellbery-test/google-parser:${TAG:-latest}
+    env_file: .env
+    container_name: google-parser
+    build: 
+      context: ./back-end/google-data-parser
+      dockerfile: Dockerfile-dev
+    command: 'bash -c "npm install && npm run start:dev"'
+    volumes:
+      - "./back-end/google-data-parser:/usr/app"
+    networks: 
+      back-end: 
+        ipv4_address: ${GOOGLE_DOMAIN}
+
+networks: 
+  back-end:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: "${SUBNET}"

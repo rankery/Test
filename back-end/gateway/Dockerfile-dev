@@ -7,9 +7,3 @@ ENV NODE_ROOT /usr/app/
 RUN mkdir -p $NODE_ROOT
 
 WORKDIR $NODE_ROOT
-
-COPY . .
-
-RUN npm install
-
-RUN npm audit fix

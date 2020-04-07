@@ -1,0 +1,52 @@
+version: '3.6'
+services:
+  web-view:
+    image: sellbery-test/web-view:${TAG:-latest}
+    container_name: web-view
+    build:
+      context: ./front-end/web-view
+      dockerfile: Dockerfile-dev
+    command: "npm run start:watch"
+    ports:
+      - "4200:4200"
+      - "49153:49153"
+    volumes:
+      - "./front-end/web-view:/usr/app/"
+  
+  gateway: 
+    image: sellbery-test/gateway:${TAG:-latest}
+    container_name: gateway
+    build: 
+      context: ./back-end/gateway
+      dockerfile: Dockerfile
+    command: "npm run start:dev"
+    ports:
+      - "3001:3000"
+    volumes:
+      - "./back-end/gateway:/usr/app"
+  
+  user:
+    image: sellbery-test/user:${TAG:-latest}
+    container_name: user
+    build: 
+      context: ./back-end/user
+      dockerfile: Dockerfile
+    command: "npm run start:dev"
+    ports:
+      - "3100:3000"
+    volumes:
+      - "./back-end/user:/usr/app"
+
+  auth0parser:
+    image: sellbery-test/auth0-parser:${TAG:-latest}
+    container_name: auth0-parser
+    build: 
+      context: ./back-end/auth0-data-parser
+      dockerfile: Dockerfile
+    command: "npm run start:dev"
+    ports:
+      - "3101:3000"
+    volumes:
+      - "./back-end/gateway:/usr/app"
+    
+

@@ -1,0 +1,10 @@
+<div class="wrapper">
+    <button mat-raised-button (click)="auth.login()" *ngIf="!auth.loggedIn">Log In</button>
+    <button mat-raised-button (click)="auth.logout()" *ngIf="auth.loggedIn">Log Out</button>
+    <div *ngIf="auth.userProfile$ | async as profile">
+        <img src='{{profile.picture}}'>
+        <p><code>{{ profile | json }}</code></p>
+    </div>
+</div>
+    
+ 

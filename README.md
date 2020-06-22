@@ -1,7 +1,9 @@
 ## Getting started
  Add enviroment files to your system - in project root directory run command
 ```bash
+$ set -a
 $ source .env
+$ set +a
 ```
 To check result run
 ```bash
